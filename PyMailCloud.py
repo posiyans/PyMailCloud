@@ -69,7 +69,7 @@ class PyMailCloud:
     def __recreate_token(self):
         loginResponse = self.session.post("https://auth.mail.ru/cgi-bin/auth",
                                           data={
-                                              "page": "http://cloud.mail.ru/",
+                                              "page": "https://cloud.mail.ru/",
                                               "Login": self.login,
                                               "Password": self.password
                                           },verify=False
@@ -87,27 +87,14 @@ class PyMailCloud:
 
     def get_subfolders(self, folder):
         folderlist = []
-        foldercount = 0
-        foldercountlast = 0
-        run = True
         rootFolderContents = json.loads(self.get_folder_contents(folder))
-        print('Listing directory {}'.format(folder))
+        print('Listing directory {}'. format(folder))
         folderlist.append(folder)
-        if rootFolderContents['body']['count']['folders'] == 0:
-            run = False
-        while run:
-            for e in rootFolderContents['body']['list']:
-                if 'count' in e and e['count']['folders'] == 0 or rootFolderContents['body']['count']['folders'] == 0:
-                    run = False
-                if e['type'] == 'folder':
-                    list = self.get_subfolders(e['home'])
-                    for f in list:
-                        folderlist.append(f)
-                    foldercount += 1
-                if foldercount == foldercountlast:
-                    run = False
-                else:
-                    foldercountlast = foldercount
+        for e in rootFolderContents['body']['list']:
+            if e['type'] == 'folder':
+                mylist = self.get_subfolders(e['home'])
+                for f in mylist:
+                    folderlist.append(f)
         return folderlist
 
     def get_folder_contents(self, folder):
@@ -137,8 +124,8 @@ class PyMailCloud:
         filedownloadlist = []
         for f in folderlist:
             metadata = json.loads(self.get_folder_contents(f))
-            if metadata['body']['count']['files'] == 0:
-                break
+            #if metadata['body']['count']['files'] == 0:
+            #    break
             # metadata = list((filemeta for filemeta in metadataList['body']['list'] if filemeta['home'] == file))[0]
 
             for file in list((file for file in metadata['body']['list'] if file['type'] == 'file')):
