@@ -1,8 +1,8 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
 import json
 import gnupg
 import os
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 from PyMailCloud import PyMailCloud
 from PyMailCloud import PyMailCloudError
